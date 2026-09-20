@@ -77,10 +77,13 @@
 }
 </script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,400;0,500;0,700;1,400&display=swap">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,400;0,500;0,700;1,400&display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,400;0,500;0,700;1,400&display=swap"></noscript>
 <script src="/kh-dict.js" defer></script>
 <style>
-  body { margin: 0; background: #ffffff; color: #20323d; font-family: var(--ms-font); }
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; background: #ffffff; color: #20323d; font-family: var(--ms-font); font-size: 15px; line-height: 1.55; }
+  img { display: block; max-width: 100%; }
   h1, h2, h3, h4, h5, h6, button, input, select, textarea { font-family: var(--ms-font); }
   a { color: #f26419; text-decoration: none; }
   a:hover { color: #20323d; }
@@ -302,10 +305,10 @@
         <span data-nav-rule style="width: 1px; height: 18px; background: rgba(32,50,61,0.18);"></span>
         <span style="display: flex; align-items: center; gap: 0; margin: 0 -3px 0 -11px;">
           <button data-lang aria-label="Switch to English" aria-pressed="{{ enPressed }}" onClick="{{ setEn }}" style="display: inline-flex; align-items: center; justify-content: center; border: 0; background: transparent; cursor: pointer; width: 44px; height: 44px; padding: 11px; margin: -11px 0; transition: opacity 0.35s ease;{{ setEnStyle }}">
-            <img src="/assets/flag-en.png" alt="" width="22" height="22" decoding="async" style="display: block; width: 22px; height: 22px; border-radius: 50%; flex: 0 0 auto;">
+            <img src="/assets/flag-en-44.png" alt="" width="44" height="44" decoding="async" style="display: block; width: 22px; height: 22px; border-radius: 50%; flex: 0 0 auto;">
           </button>
           <button data-lang aria-label="Switch to Khmer" aria-pressed="{{ khPressed }}" onClick="{{ setKh }}" style="display: inline-flex; align-items: center; justify-content: center; border: 0; background: transparent; cursor: pointer; width: 44px; height: 44px; padding: 11px; margin: -11px 0; transition: opacity 0.35s ease;{{ setKhStyle }}">
-            <img src="/assets/flag-kh.png" alt="" width="22" height="22" decoding="async" style="display: block; width: 22px; height: 22px; border-radius: 50%; flex: 0 0 auto;">
+            <img src="/assets/flag-kh-44.png" alt="" width="44" height="44" decoding="async" style="display: block; width: 22px; height: 22px; border-radius: 50%; flex: 0 0 auto;">
           </button>
         </span>
         <button data-burger onClick="{{ toggleMenu }}" aria-label="Menu" aria-expanded="{{ menuOpen }}" style="display: none; align-items: center; justify-content: center; width: 44px; height: 44px; margin-right: -8px; border: 0; background: transparent; cursor: pointer; flex: 0 0 auto;">
@@ -565,7 +568,7 @@
         <div data-2col style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(16px, 3vw, 56px); align-items: end; margin-bottom: clamp(30px, 4vw, 52px);">
           <div>
             <div style="display: flex; align-items: center; gap: 14px; margin-bottom: clamp(16px, 2vw, 22px);">
-              <img src="/assets/aeon-online-logo.png" alt="AEON Online" width="1053" height="460" loading="lazy" decoding="async" style="height: 40px; width: auto; display: block; flex: 0 0 auto;">
+              <img src="/assets/aeon-online-logo-2x.png" alt="AEON Online" width="184" height="80" loading="lazy" decoding="async" style="height: 40px; width: auto; display: block; flex: 0 0 auto;">
               <span style="width: 1px; height: 30px; background: rgba(32,50,61,0.18);"></span>
               <span style="font-size: 10.5px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: #566270;">Marketplace platform</span>
             </div>
@@ -1633,6 +1636,19 @@ class Component extends DCLogic {
     }
   }
 
+  // The Ubuntu stylesheet ships as rel="preload" so it never blocks the first
+  // paint; the runtime strips an inline onload, so promote it here instead.
+  // The preload has already fetched it, so this is a cache hit.
+  attachFonts() {
+    const pre = document.querySelector('link[rel="preload"][as="style"]');
+    if (!pre || this._fontsOn) return;
+    this._fontsOn = true;
+    const l = document.createElement('link');
+    l.rel = 'stylesheet';
+    l.href = pre.href;
+    document.head.appendChild(l);
+  }
+
   // The Khmer face is only needed once someone asks for Khmer — keeping it off
   // the initial load saves an render-blocking stylesheet and a large font file
   // for the English visitors who are the majority.
@@ -1707,6 +1723,7 @@ class Component extends DCLogic {
   }
 
   componentDidMount() {
+    this.attachFonts();
     document.documentElement.lang = this.state.lang === 'kh' ? 'km' : 'en';
     if (!document.title) document.title = 'Mantisy — Digital agency in Phnom Penh, Cambodia';
 
