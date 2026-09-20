@@ -1,0 +1,24 @@
+# Mantisy
+
+> Mantisy is a digital studio in Russey Keo, Phnom Penh, Cambodia. We design and build mobile apps, websites, POS systems, brand identities and document management systems for Cambodian businesses. Founded 2018.
+
+## Services
+
+- [UX/UI Design](https://mantisy.com/services/ux): Research, flows and interface design grounded in how your team and customers actually work.
+- [Mobile Development](https://mantisy.com/services/mobile): iOS and Android apps, built and shipped to the stores.
+- [Web Development](https://mantisy.com/services/web): Websites and web applications, from marketing sites to internal tools.
+- [Brand Identity](https://mantisy.com/services/brand): Marks, type, colour and the rules that keep them consistent.
+- [POS Systems](https://mantisy.com/services/pos): Point of sale for restaurants and retail, including stock and reporting.
+- [Document Management](https://mantisy.com/services/docs): Approvals, records and filing moved off paper and out of shared drives.
+
+## Work
+
+- [AEON Online](https://mantisy.com/work/aeon-online): Marketplace platform — product catalogue, merchant onboarding and delivery routing.
+
+## Contact
+
+- Email: business@mantisy.com
+- Telegram: @mantisy
+- Address: #59, Street 9M, The Park Land Condo TK, Sangkat Toul Sangke, Khan Russey Keo, Phnom Penh, Cambodia
+- Hours: Monday to Friday, 09:00-18:00 (GMT+7)
+- Languages: English, Khmer
