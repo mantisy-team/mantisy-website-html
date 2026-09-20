@@ -1,97 +1,74 @@
-# Mantisy website — deploy notes
+# Mantisy — static site deploy (unbundled)
 
-## 1 · Files to upload to the web root
-- `index.html` — the whole site, one self-contained file
-- `og-image.png` — link preview image
-- `robots.txt`, `sitemap.xml`
+Upload the **contents** of this folder to the site root, so that
+`https://mantisy.com/index.html`, `/support.js` and `/assets/…` all resolve.
 
-`DEPLOY.md`, `.do/app.yaml`, `do-function/` and `telegram-proxy.worker.js`
-are for you, not the server. Do not upload them.
+```
+index.html          the page (markup + logic, ~186 KB)
+support.js          the runtime that renders it
+kh-dict.js          Khmer strings, loaded deferred
+assets/             logos, marks, flags, AEON logo
+og-image.png        social preview
+llms.txt            for AI crawlers — must sit at the root
+robots.txt
+sitemap.xml
+.do/app.yaml        DigitalOcean App Platform spec
+```
 
-## 2 · Clean URLs — one required setting
-Paths like `/services/pos` are handled inside the page. The server must serve
-`index.html` for unknown paths, or a visitor landing directly on
-`/services/pos` gets a 404.
+## Required host settings
 
-**DigitalOcean control panel:** App → Settings → your static site component →
-**Catchall document** → `index.html` → Save.
+- **index document**: `index.html`
+- **catchall document**: `index.html` — clean URLs (`/services/pos`, `/work/aeon-online`)
+  are handled by the in-page router, so unknown paths must serve the page rather than 404.
 
-(Or use `.do/app.yaml`: edit the repo name, then
-`doctl apps update <app-id> --spec .do/app.yaml`.)
+`.do/app.yaml` already sets both. Point it at your repo before deploying.
 
-## 3 · Contact form → Telegram
+## Why paths are absolute
 
-### Why the token cannot just be locked to your domain
-BotFather's `/setdomain` only restricts the **Telegram Login Widget**, not the
-Bot API. A bot token is a full credential: anyone who reads it can post as your
-bot, read what it receives, or hijack it with `setWebhook` — from any script,
-anywhere. Telegram offers no origin restriction, and CORS cannot help because
-browsers enforce CORS and attackers do not use browsers.
+Every asset is referenced as `/assets/…`, not `assets/…`. With a catchall in
+place, a relative path on `/services/pos` would resolve to
+`/services/assets/…`, which the catchall answers with HTML instead of an
+image. Absolute paths are what make deep links safe — keep them that way.
 
-So the token must live somewhere the public cannot read it. You are already on
-DigitalOcean, so use **DigitalOcean Functions** — same account, no new vendor,
-and the free allowance (90,000 GiB-seconds/month) is far beyond what a contact
-form uses.
+## The enquiry form
 
-### Step 1 — get a fresh token
-The old token was shared in chat, so retire it:
-1. **@BotFather** → `/mybots` → **@mantisybot** → **API Token** → **Revoke current token**
-2. Copy the new token. It goes only into step 3.
+Unchanged: it posts to the DigitalOcean Function in `export/do-function/`.
+The Telegram token stays in the Function's environment, never in this folder.
 
-### Step 2 — create the function
-DigitalOcean console → **Functions** → **Create Namespace** (any name, region `sgp1`)
-→ **Create Function** → runtime **Node.js 18**, name **submit**.
+## Caching
 
-Open the editor, delete the sample, and paste all of
-`do-function/packages/enquiry/submit/index.js`. **Save**.
+Set a long `max-age` on `assets/`, `support.js` and `kh-dict.js`, and a short
+one (or `no-cache`) on `index.html`, so a new deploy is picked up immediately
+while the heavy files stay cached.
 
-### Step 3 — add the two variables
-Same function → **Settings** → **Environment Variables** → add:
+## What changed from the single-file build
 
-| Key | Value |
-|---|---|
-| `TG_TOKEN` | the new token from step 1 |
-| `TG_CHAT` | `-983521664` |
+- Dropped the unused Modernist design-system CSS and JS bundle — nothing on
+  the page referenced them (that was the "203 KiB unused CSS" in Lighthouse).
+- React is served from this origin (`/vendor/`) instead of unpkg.
+- The Khmer font is fetched only when a visitor taps the Khmer flag.
+- `kh-dict.js` is deferred.
+- Images carry explicit `width`/`height`, and below-the-fold ones are lazy.
 
-**Save**, then **Deploy**.
 
-### Step 4 — make it web-accessible and copy the URL
-In the function's settings, enable **Web** (public HTTP access), then copy the
-endpoint URL. It looks like:
+## One manual step: the React files
 
-    https://faas-sgp1-XXXX.doserverless.co/api/v1/web/fn-XXXX/enquiry/submit
+`index.html` loads React from `/vendor/`. Fetch both files once and upload
+them alongside everything else:
 
-### Step 5 — point the site at it
-In `index.html`, find
+```sh
+mkdir -p vendor
+curl -o vendor/react.production.min.js \
+  https://unpkg.com/react@18.3.1/umd/react.production.min.js
+curl -o vendor/react-dom.production.min.js \
+  https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js
+```
 
-    proxy: 'PASTE_YOUR_WORKER_URL_HERE'
+Why: on a throttled mobile connection unpkg cost ~2,400 ms of render-blocking
+time — a separate DNS lookup and TLS handshake before 47 KB could even start
+downloading. Served from mantisy.com the connection is already open.
 
-and replace the placeholder with your function URL, keeping the quotes.
-Or send me the URL and I will wire it in and rebuild.
+If either file is missing the runtime falls back to unpkg on its own, so a
+forgotten upload makes the site slow again but never broken. Verified.
 
-### Step 6 — test
-Submit the form on the live site. The enquiry should appear in
-**Mantisy Contact**. If not, open the function's **Logs** and submit again —
-the Telegram error will be printed there.
-
-### Prefer the CLI?
-`do-function/` is a ready doctl project:
-
-    cd do-function
-    export TG_TOKEN=... TG_CHAT=-983521664
-    doctl serverless deploy .
-
-### Cloudflare alternative
-If you ever do use Cloudflare, `telegram-proxy.worker.js` is the same thing as
-a Worker. Either one works; you only need one.
-
-### Until step 5 is done
-The form opens the visitor's mail client with the enquiry pre-filled to
-business@mantisy.com, so no enquiry is lost in the meantime.
-
-## Notes
-- The allowed-origins list is at the top of the function. Add any other domain
-  you serve the site from, or requests from it will be refused.
-- Telegram group ids are negative — keep the minus sign.
-- The site sends the enquiry as `text/plain` so there is no CORS preflight;
-  do not change that unless your endpoint handles `OPTIONS`.
+Give `/vendor/` a long cache lifetime — the filenames are version-pinned.
