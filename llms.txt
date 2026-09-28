@@ -1,24 +1,29 @@
 # Mantisy
 
-> Mantisy is a digital studio in Russey Keo, Phnom Penh, Cambodia. We design and build mobile apps, websites, POS systems, brand identities and document management systems for Cambodian businesses. Founded 2018.
+> Mantisy is a digital studio in Russey Keo, Phnom Penh, Cambodia. We design brands, build custom apps, systems and AI, and offer ready-made products that we tailor to each client. Founded 2018.
 
 ## Services
 
-- [UX/UI Design](https://mantisy.com/services/ux): Research, flows and interface design grounded in how your team and customers actually work.
-- [Mobile Development](https://mantisy.com/services/mobile): iOS and Android apps, built and shipped to the stores.
-- [Web Development](https://mantisy.com/services/web): Websites and web applications, from marketing sites to internal tools.
-- [Brand Identity](https://mantisy.com/services/brand): Marks, type, colour and the rules that keep them consistent.
-- [POS Systems](https://mantisy.com/services/pos): Point of sale for restaurants and retail, including stock and reporting.
-- [Document Management](https://mantisy.com/services/docs): Approvals, records and filing moved off paper and out of shared drives.
+- [Design & Brand](https://mantisy.com/services/ux): Brand identity and product design from one team, tested with real users in Khmer and English.
+- [App & System Development](https://mantisy.com/services/mobile): Custom mobile apps, websites and internal systems, built in two-week sprints with source code handed over.
+- [AI Development](https://mantisy.com/services/ai): Custom AI models trained on the client's own data to solve a specific business problem.
+
+## Products
+
+- [DWM](https://mantisy.com/products/dwm): Document and workflow management. Filing, approvals and sign-off in one place, with a full audit trail. Khmer and English.
+- [JotPark](https://mantisy.com/products/jotpark): Digital parking tickets for staffed car and motorbike parks. Photo check at entry and exit, and shift takings that add up. No barriers needed.
+- [Seek](https://mantisy.com/products/seek): AI visual product search. Shoppers search a retailer's catalogue by photo, text or barcode. Trained on each client's products and delivered as an API.
+- [Super Store](https://mantisy.com/products/super-store): E-commerce and marketplace platform with web and mobile apps, KHQR payments, stock and delivery.
+- [Cloud Stream](https://mantisy.com/products/cloud-stream): White-label streaming platform for music, video, podcasts and books, with subscriptions and content protection.
 
 ## Work
 
-- [AEON Online](https://mantisy.com/work/aeon-online): Marketplace platform — product catalogue, merchant onboarding and delivery routing.
+- [AEON Online](https://mantisy.com/work/aeon-online): Opening AEON's online shop into a marketplace, with customer, web, merchant and driver apps on one catalogue.
+- [Go Digital Cambodia](https://godigital.gov.kh/): National digital literacy portal for the Ministry of Post and Telecommunications. UX/UI, web and CMS.
 
 ## Contact
 
 - Email: business@mantisy.com
-- Telegram: @mantisy
 - Address: #59, Street 9M, The Park Land Condo TK, Sangkat Toul Sangke, Khan Russey Keo, Phnom Penh, Cambodia
 - Hours: Monday to Friday, 09:00-18:00 (GMT+7)
 - Languages: English, Khmer
